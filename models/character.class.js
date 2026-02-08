@@ -9,6 +9,9 @@ class Character extends MoveObjects {
     points;
     orden;
     team;
+
+    isLocked = false;
+
     
 
     IMG_WALK_EAST = [];
@@ -66,6 +69,8 @@ class Character extends MoveObjects {
 
     reactionsCharacter() {
 
+        if (this.isLocked) return;
+
         if (this.player === this.world.activePlayer) {
 
             if (this.world.keyboard.UP && !this.world.keyboard.LEFT && !this.world.keyboard.RIGHT) {
@@ -114,5 +119,28 @@ class Character extends MoveObjects {
 
 
     }
+
+
+    playJumpAnimationOnce() {
+    return new Promise(resolve => {
+
+        this.isLocked = true;
+        let frame = 0;
+
+        const interval = setInterval(() => {
+
+            this.loadImage(this.IMG_JUMP[frame]);
+            frame++;
+
+            if (frame >= this.IMG_JUMP.length) {
+                clearInterval(interval);
+                this.isLocked = false;
+                resolve();
+            }
+
+        }, 100); // gleiche Geschwindigkeit wie animate()
+    });
+}
+
 
 }
