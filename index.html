@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jungschar-Party</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="models/moveObjects.class.js"></script>
+    <script src="models/scoreboard.class.js"></script>
+    <script src="models/character.class.js"></script>
+    <script src="models/cha-alex.class.js"></script> 
+    <script src="models/cha-chris.class.js"></script>
+    <script src="models/cha-kim.class.js"></script>
+    <script src="models/cha-luka.class.js"></script>
+    <script src="models/cha-paddy.class.js"></script>
+    <script src="models/cha-sascha.class.js"></script>  
+    <script src="models/plate.class.js"></script>   
+    <script src="models/map-overlay.class.js"></script>
+    <script src="models/map.class.js"></script>
+    <script src="models/dice.class.js"></script>
+    <script src="models/cameraview.class.js"></script>
+    <script src="models/keyboard.class.js"></script>    
+    <script src="models/world.class.js"></script>
+    <script src="models/games.class.js"></script>
+    <script src="js/game.js"></script>
+</head>
+<body onload="init()">
+    <img src="./img/jungscharparty.png">
+    <div id="screen">
+        <canvas id="canvas" class="" width="1024" height="480"></canvas>
+    </div>
+    <div class="charBox" id="charBox">
+        <div id="alex" class="character" onclick="addCharacter('alex')">
+            <img src="img/characters/alex/alex.jpg">
+            <span>Alex</span>
+        </div>
+        <div id="chris" class="character" onclick="addCharacter('chris')">
+            <img src="img/characters/chris/chris.jpg">
+            <span>Chris</span>
+        </div>
+        <div id="kim" class="character" onclick="addCharacter('kim')">
+            <img src="img/characters/kim/kim.jpg">
+            <span>Kim</span>
+        </div>
+        <div id="luka" class="character" onclick="addCharacter('luka')">
+            <img src="img/characters/luka/luka.jpg">
+            <span>Luka</span>
+        </div>
+        <div id="paddy" class="character" onclick="addCharacter('paddy')">
+            <img src="img/characters/paddy/paddy.jpg">
+            <span>Paddy</span>
+        </div>
+        <div id="sascha" class="character" onclick="addCharacter('sascha')">
+            <img src="img/characters/sascha/sascha.jpg">
+            <span>Sascha</span>
+        </div>
+    </div>
+    <h2 onclick="setWorldStart()">START</h2>
+</body>
+</html>
