@@ -62,7 +62,12 @@ class World {
     ctx;
     games = [];
     canvasHere;
-    startScore = 10;
+    startScore = 20;
+    popup;
+
+    games_jgj = [];
+    games_2vs2 = [];
+    games_unfair = [];
 
     camera_x = 0;
     camera_y = 0;
@@ -117,6 +122,11 @@ class World {
         this.scoreboard.forEach(board => { this.drawImage(board); });   // Scoreboards werden gezeichnet
         this.teamScore.forEach(team => { team.draw(this.ctx); });   // Team Scores werden gezeichnet
         if (!this.camlock) { this.drawImage(this.camView); }
+        if (this.popup) { 
+            this.drawImage(this.popup); 
+            if (this.popup.text && this.popup.title) { this.popup.draw(this.ctx); }
+        }  // PopUp mit Schildinfos wird gezeichnet
+
         let self = this;
         requestAnimationFrame(() => {
             self.draw();
@@ -199,18 +209,20 @@ class World {
 
 
     // Der nächste Spieler wird aktiviert
-    nextPlayer() {
+    async nextPlayer() {
         if (this.keyboard.SPACE) {
             if (!this.spaceLock) {
                 this.spaceLock = true;
                 this.activePlayer++;
                 if (this.activePlayer > this.character.length) {
+                    await this.gamesPopup();
                     this.activePlayer = 1;
                 }
                 console.log('Active Player: ' + this.activePlayer + ": " + this.character[this.activePlayer - 1].name);
                 this.character[this.activePlayer - 1].AUDIO_TURN.play();
             }
         } else { this.spaceLock = false; }
+        this.keyboard.SPACE = false; // Verhindert, dass die Leertaste in der nächsten Runde noch aktiv ist
     }
 
     // Der Würfel wird geworfen
@@ -255,6 +267,87 @@ class World {
     }
 
 
+    gamesPopup() {
+        const type = this.checkGamesType();
+        let gameType;
+        switch (type) {
+            case 'jgj': gameType = this.games_jgj; break;
+            case '2vs2': gameType = this.games_2vs2; break;
+            case 'unfair': gameType = this.games_unfair; break;
+        }
+        let amount = gameType.length;
+        const randomIndex = Math.floor(Math.random() * amount);
+        if (type == 'jgj') {
+            this.popup = new PopUp(this, 30, -70, 800, 550, 'spiel-JGJ', gameType[randomIndex].title, 430, 150, gameType[randomIndex].rules, 430, 180);
+        } else {
+            this.popup = new PopUp(this, 30, -70, 800, 550, 'spiel-BGR', gameType[randomIndex].title, 430, 150, gameType[randomIndex].rules, 430, 180);
+        }
+        return new Promise(resolve => {
+
+            if (type == '2vs2' || type == 'unfair') {
+                const onKeyDown = (e) => {
+                    if (e.code === 'ArrowLeft') {
+                        window.removeEventListener('keydown', onKeyDown);
+                        resolve('blue'); // Blaues Team
+                    }
+
+                    if (e.code === 'ArrowRight') {
+                        window.removeEventListener('keydown', onKeyDown);
+                        resolve('red'); // Rotes Team
+                    }
+                };
+
+                window.addEventListener('keydown', onKeyDown);
+            } else {
+                const onKeyDown = (e) => {
+                    if (e.code === 'Digit1') {
+                        window.removeEventListener('keydown', onKeyDown);
+                        resolve(this.character[0].name); // Spieler 1
+                    }
+
+                    if (e.code === 'Digit2') {
+                        window.removeEventListener('keydown', onKeyDown);
+                        resolve(this.character[1].name); // Spieler 2
+                    }
+
+                    if (e.code === 'Digit3') {
+                        window.removeEventListener('keydown', onKeyDown);
+                        resolve(this.character[2].name); // Spieler 3
+                    }
+
+                    if (e.code === 'Digit4') {
+                        window.removeEventListener('keydown', onKeyDown);
+                        resolve(this.character[3].name); // Spieler 4
+                    }
+
+                    if (e.code === 'Digit5') {
+                        window.removeEventListener('keydown', onKeyDown);
+                        resolve(this.character[4].name); // Spieler 5
+                    }
+
+                    if (e.code === 'Digit6') {
+                        window.removeEventListener('keydown', onKeyDown);
+                        resolve(this.character[5].name); // Spieler 6
+                    }
+                };
+            }
+        });
+    }
+
+
+    checkGamesType() {
+        let blue = 0;
+        let red = 0;
+        this.character.forEach(char => {
+            if (char.team === 'blue') { blue++; }
+            if (char.team === 'red') { red++; }
+        });
+        if (red === 0) { return 'jgj'; }
+        else if (red === blue) { return '2vs2'; }
+        else { return 'unfair'; }
+    }
+
+
     async movePlayer() {
         const char = this.character[this.activePlayer - 1];
         this.endPlate = false;
@@ -270,7 +363,9 @@ class World {
             }
 
             if (this.startPlate === 33) {
+                this.popup = new PopUp(this, 250, 25, 400, 450, 'wegweiser', '', '', '', '', '', '');
                 this.startPlate = await this.chooseDirection();
+                this.popup = null;
                 char.pos = this.startPlate;
             } else {
                 this.startPlate++;
@@ -295,6 +390,10 @@ class World {
             }
 
         }
+        setTimeout(() => {
+            this.keyboard.SPACE = true;
+            this.nextPlayer();
+        }, 1000);   
     }
 
     chooseDirection() {
@@ -393,12 +492,21 @@ class World {
             if (plate.no === char.pos + 2) {
                 const board = this.teamScore[char.player - 1];
                 switch (plate.act) {
-                    case 'b': char.AUDIO_JUHU.play(); char.team = 'blue'; board.addPoints(3); break;
-                    case 'r': char.AUDIO_NO.play(); char.team = 'red'; board.addPoints(-3); break;
-                    case 'y': this.handleYellowPlate(char, plate); break;
+                    case 'b': char.AUDIO_JUHU.play(); char.team = 'blue'; board.addPoints(3); this.showPointsPopup('p'); break;
+                    case 'r': char.AUDIO_NO.play(); char.team = 'red'; board.addPoints(-3); this.showPointsPopup('m'); break;
+                    case 'y': this.handleYellowPlate(char, plate); char.team = 'blue'; break;
                 }
             }
         })
+    }
+
+
+    showPointsPopup(val) {
+        if (val == 'p') { this.popup = new PopUp(this, 460, 50, 100, 73, 'p3', '', '', '', '', '', ''); }
+        if (val == 'm') { this.popup = new PopUp(this, 460, 50, 100, 73, 'm3', '', '', '', '', '', ''); }
+        setTimeout(() => {
+            this.popup = null;
+        }, 2000);
     }
 
 
@@ -412,6 +520,8 @@ class World {
         }
 
         // ❓ Spieler fragen
+        this.popup = new PopUp(this, 250, 25, 600, 450, 'orden', '', '', '', '', '', '');
+
         const wantsToBuy = await this.askYesNo();
 
         if (wantsToBuy) {
@@ -420,6 +530,7 @@ class World {
             char.AUDIO_ORDEN.play();
             await char.playJumpAnimationOnce();
             this.replaceYellowPlate(plate.no);
+            this.popup = null;
             console.log('Orden gekauft');
         } else {
             console.log('Orden abgelehnt');
@@ -491,7 +602,7 @@ class World {
 
     setWorld() {
         this.initYellowPlates();
-        // this.setYellowPlates('start');
+        this.initGames();
         this.character.forEach(char => {
             char.setWorld(this);
         });
@@ -514,6 +625,32 @@ class World {
                 this.plates[plateNo - 1].setAct('y');
             }
         }
+    }
+
+
+    initGames() {
+        const allGames = new Games();
+        const collection = allGames.collection;
+        collection.forEach(game => {
+            if (game.mode_All) {
+                this.games_jgj.push({
+                    title: game.name,
+                    rules: game.rules_All
+                });
+            }
+            if (game.mode_2vs2) {
+                this.games_2vs2.push({
+                    title: game.name,
+                    rules: game.rules_2vs2
+                });
+            }
+            if (game.mode_unfair) {
+                this.games_unfair.push({
+                    title: game.name,
+                    rules: game.rules_unfair
+                });
+            }
+        });
     }
 
 
@@ -553,7 +690,7 @@ class World {
             case 'chris':
                 this.character.push(new Chris(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
                 this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/chris.png', this.player + 1));
-                this.teamScore.push(new Teamscore(870, place + 20, this.player + 1));
+                this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
                 break;
             case 'kim':
                 this.character.push(new Kim(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
@@ -563,7 +700,7 @@ class World {
             case 'luka':
                 this.character.push(new Luka(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
                 this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/luka.png', this.player + 1));
-                this.teamScore.push(new Teamscore(870, place + 20, this.player + 1));
+                this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
                 break;
             case 'paddy':
                 this.character.push(new Paddy(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
