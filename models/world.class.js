@@ -64,6 +64,7 @@ class World {
     canvasHere;
     startScore = 20;
     popup;
+    gamestart = false;
 
     games_jgj = [];
     games_2vs2 = [];
@@ -74,6 +75,7 @@ class World {
     cameraSmooth = 0.05;
 
     activePlayer = 1;
+    faces = [];
 
     spaceLock = false;
     enterLock = false;
@@ -91,6 +93,7 @@ class World {
     yellow2;
 
     camlock = true;
+    activeFace = null;
 
     AUDIO_DICEROLL = new Audio('audio/diceroll.wav');
     AUDIO_DICESTOP = new Audio('audio/dicestop.wav');
@@ -122,11 +125,12 @@ class World {
         this.scoreboard.forEach(board => { this.drawImage(board); });   // Scoreboards werden gezeichnet
         this.teamScore.forEach(team => { team.draw(this.ctx); });   // Team Scores werden gezeichnet
         if (!this.camlock) { this.drawImage(this.camView); }
-        if (this.popup) { 
-            this.drawImage(this.popup); 
+        if (this.popup) {
+            this.drawImage(this.popup);
             if (this.popup.text && this.popup.title) { this.popup.draw(this.ctx); }
         }  // PopUp mit Schildinfos wird gezeichnet
-
+        this.faces.forEach(face => face.draw(this.ctx));
+        if (this.activeFace && this.gamestart) { this.activeFace.draw(this.ctx);}
         let self = this;
         requestAnimationFrame(() => {
             self.draw();
@@ -215,10 +219,13 @@ class World {
                 this.spaceLock = true;
                 this.activePlayer++;
                 if (this.activePlayer > this.character.length) {
-                    await this.gamesPopup();
+                    const result = await this.gamesPopup();
+                    await this.applyGameResult(result);
+                    this.popup = null;
                     this.activePlayer = 1;
                 }
-                console.log('Active Player: ' + this.activePlayer + ": " + this.character[this.activePlayer - 1].name);
+                // console.log('Active Player: ' + this.activePlayer + ": " + this.character[this.activePlayer - 1].name);
+                this.activeFace = new FaceIcon(this.character[this.activePlayer - 1], 20, 20, this.character[this.activePlayer - 1].player - 1, 150);
                 this.character[this.activePlayer - 1].AUDIO_TURN.play();
             }
         } else { this.spaceLock = false; }
@@ -267,72 +274,251 @@ class World {
     }
 
 
-    gamesPopup() {
+    // gamesPopup() {
+    //     const type = this.checkGamesType();
+    //     let gameType;
+    //     switch (type) {
+    //         case 'jgj': gameType = this.games_jgj; break;
+    //         case '2vs2': gameType = this.games_2vs2; break;
+    //         case 'unfair': gameType = this.games_unfair; break;
+    //     }
+    //     let amount = gameType.length;
+    //     const randomIndex = Math.floor(Math.random() * amount);
+    //     if (type == 'jgj') {
+    //         this.popup = new PopUp(this, 30, -70, 800, 550, 'spiel-JGJ', gameType[randomIndex].title, 430, 150, gameType[randomIndex].rules, 430, 180);
+    //     } else {
+    //         this.popup = new PopUp(this, 30, -70, 800, 550, 'spiel-BGR', gameType[randomIndex].title, 430, 150, gameType[randomIndex].rules, 430, 180);
+    //     }
+    //     return new Promise(resolve => {
+
+    //         if (type == '2vs2' || type == 'unfair') {
+    //             const onKeyDown = (e) => {
+    //                 if (e.code === 'ArrowLeft') {
+    //                     window.removeEventListener('keydown', onKeyDown);
+    //                     resolve('blue'); // Blaues Team
+    //                 }
+
+    //                 if (e.code === 'ArrowRight') {
+    //                     window.removeEventListener('keydown', onKeyDown);
+    //                     resolve('red'); // Rotes Team
+    //                 }
+    //             };
+
+    //             window.addEventListener('keydown', onKeyDown);
+    //         } else {
+    //             const onKeyDown = (e) => {
+    //                 if (e.code === 'Digit1') {
+    //                     window.removeEventListener('keydown', onKeyDown);
+    //                     resolve(this.character[0].name); // Spieler 1
+    //                 }
+
+    //                 if (e.code === 'Digit2') {
+    //                     window.removeEventListener('keydown', onKeyDown);
+    //                     resolve(this.character[1].name); // Spieler 2
+    //                 }
+
+    //                 if (e.code === 'Digit3') {
+    //                     window.removeEventListener('keydown', onKeyDown);
+    //                     resolve(this.character[2].name); // Spieler 3
+    //                 }
+
+    //                 if (e.code === 'Digit4') {
+    //                     window.removeEventListener('keydown', onKeyDown);
+    //                     resolve(this.character[3].name); // Spieler 4
+    //                 }
+
+    //                 if (e.code === 'Digit5') {
+    //                     window.removeEventListener('keydown', onKeyDown);
+    //                     resolve(this.character[4].name); // Spieler 5
+    //                 }
+
+    //                 if (e.code === 'Digit6') {
+    //                     window.removeEventListener('keydown', onKeyDown);
+    //                     resolve(this.character[5].name); // Spieler 6
+    //                 }
+    //             };
+    //         }
+    //     });
+    // }
+
+    async gamesPopup() {
+        this.activeFace = null;
         const type = this.checkGamesType();
-        let gameType;
+
+        let pool;
+        let popupType;
+
         switch (type) {
-            case 'jgj': gameType = this.games_jgj; break;
-            case '2vs2': gameType = this.games_2vs2; break;
-            case 'unfair': gameType = this.games_unfair; break;
+            case 'jgj':
+                pool = this.games_jgj;
+                popupType = 'spiel-JGJ';
+                break;
+            case '2vs2':
+                pool = this.games_2vs2;
+                popupType = 'spiel-BGR';
+                break;
+            case 'unfair':
+                pool = this.games_unfair;
+                popupType = 'spiel-BGR';
+                break;
         }
-        let amount = gameType.length;
-        const randomIndex = Math.floor(Math.random() * amount);
-        if (type == 'jgj') {
-            this.popup = new PopUp(this, 30, -70, 800, 550, 'spiel-JGJ', gameType[randomIndex].title, 430, 150, gameType[randomIndex].rules, 430, 180);
+
+        const game = pool[Math.floor(Math.random() * pool.length)];
+
+        this.popup = new PopUp(
+            this,
+            30, -70, 800, 550,
+            popupType,
+            game.title,
+            430, 150,
+            game.rules,
+            430, 180
+        );
+        if (type === 'jgj') {
+            this.createJGJFaces();
         } else {
-            this.popup = new PopUp(this, 30, -70, 800, 550, 'spiel-BGR', gameType[randomIndex].title, 430, 150, gameType[randomIndex].rules, 430, 180);
+            this.createTeamFaces();
         }
+
+        // ⏳ auf Gewinner warten
+        let winner;
+
+        if (type === 'jgj') {
+            winner = await this.waitForJGJWinner();
+        } else {
+            winner = await this.waitForTeamWinner();
+
+        }
+        this.faces = [];
+        this.popup = null;
+
+        return { type, winner };
+
+    }
+
+
+    waitForJGJWinner() {
         return new Promise(resolve => {
-
-            if (type == '2vs2' || type == 'unfair') {
-                const onKeyDown = (e) => {
-                    if (e.code === 'ArrowLeft') {
-                        window.removeEventListener('keydown', onKeyDown);
-                        resolve('blue'); // Blaues Team
-                    }
-
-                    if (e.code === 'ArrowRight') {
-                        window.removeEventListener('keydown', onKeyDown);
-                        resolve('red'); // Rotes Team
-                    }
-                };
-
-                window.addEventListener('keydown', onKeyDown);
-            } else {
-                const onKeyDown = (e) => {
-                    if (e.code === 'Digit1') {
-                        window.removeEventListener('keydown', onKeyDown);
-                        resolve(this.character[0].name); // Spieler 1
-                    }
-
-                    if (e.code === 'Digit2') {
-                        window.removeEventListener('keydown', onKeyDown);
-                        resolve(this.character[1].name); // Spieler 2
-                    }
-
-                    if (e.code === 'Digit3') {
-                        window.removeEventListener('keydown', onKeyDown);
-                        resolve(this.character[2].name); // Spieler 3
-                    }
-
-                    if (e.code === 'Digit4') {
-                        window.removeEventListener('keydown', onKeyDown);
-                        resolve(this.character[3].name); // Spieler 4
-                    }
-
-                    if (e.code === 'Digit5') {
-                        window.removeEventListener('keydown', onKeyDown);
-                        resolve(this.character[4].name); // Spieler 5
-                    }
-
-                    if (e.code === 'Digit6') {
-                        window.removeEventListener('keydown', onKeyDown);
-                        resolve(this.character[5].name); // Spieler 6
-                    }
-                };
-            }
+            const handler = (e) => {
+                const index = parseInt(e.key) - 1;
+                if (index >= 0 && index < this.character.length) {
+                    window.removeEventListener('keydown', handler);
+                    resolve(index); // Spielerindex
+                }
+            };
+            window.addEventListener('keydown', handler);
         });
     }
+
+
+    waitForTeamWinner() {
+        return new Promise(resolve => {
+            const handler = (e) => {
+                if (e.code === 'ArrowLeft') {
+                    window.removeEventListener('keydown', handler);
+                    resolve('blue');
+                }
+                if (e.code === 'ArrowRight') {
+                    window.removeEventListener('keydown', handler);
+                    resolve('red');
+                }
+            };
+            window.addEventListener('keydown', handler);
+        });
+    }
+
+
+    async applyGameResult(result) {
+        if (result.type === 'jgj') {
+            const char = this.character[result.winner];
+            const board = this.teamScore[result.winner];
+
+            board.addPoints(10);
+
+            char.AUDIO_POINTS.currentTime = 0;
+            char.AUDIO_POINTS.play();
+
+            await char.playJumpAnimationOnceWin();
+            await this.sleep(2000);
+        } else {
+            const winners = this.character.filter(
+                char => char.team === result.winner
+            );
+
+            for (const char of winners) {
+                const board = this.teamScore[char.player - 1];
+                board.addPoints(10);
+
+                char.AUDIO_POINTS.currentTime = 0;
+                char.AUDIO_POINTS.play();
+
+                await char.playJumpAnimationOnceWin();
+                await this.sleep(2000);
+            }
+        }
+    }
+
+
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+
+
+    createJGJFaces() {
+        this.faces = [];
+
+        const count = this.character.length;
+        const centerX = 380;
+        const y = 390;
+
+        const spacing = Math.min(700, 800 / count);
+        const startX = centerX - ((count - 1) * spacing) / 2;
+
+        this.character.forEach((char, i) => {
+            this.faces.push(
+                new FaceIcon(char, startX + i * spacing, y, i)
+            );
+        });
+    }
+
+
+    createTeamFaces() {
+        this.faces = [];
+
+        const y = 390;
+        const spacing = 70;           // Abstand zwischen Gesichtern (kann leicht überlappen)
+        const maxWidth = 750;         // Maximalbreite für die Teams im Popup
+
+        // Teams trennen
+        const blueTeam = this.character.filter(c => c.team === 'blue');
+        const redTeam = this.character.filter(c => c.team === 'red');
+
+        // Blaues Team links außen starten
+        let blueX = 50; // linker Rand
+        if (blueTeam.length > 1) {
+            // Abstand ggf. anpassen, wenn Team zu breit für maxWidth
+            const totalBlueWidth = (blueTeam.length - 1) * spacing;
+            if (totalBlueWidth > maxWidth) {
+                blueX = 50; // Start bleibt links, spacing wird überlappt
+            }
+        }
+        blueTeam.forEach((char, i) => {
+            this.faces.push(new FaceIcon(char, blueX + i * spacing, y, char.player - 1));
+        });
+
+        // Rotes Team rechts außen starten
+        let redX = 720; // rechter Rand
+        if (redTeam.length > 1) {
+            const totalRedWidth = (redTeam.length - 1) * spacing;
+            redX = 720 - totalRedWidth; // Die Reihe wird von rechts nach links aufgebaut
+        }
+        redTeam.forEach((char, i) => {
+            this.faces.push(new FaceIcon(char, redX + i * spacing, y, char.player - 1));
+        });
+    }
+
+
 
 
     checkGamesType() {
@@ -393,7 +579,7 @@ class World {
         setTimeout(() => {
             this.keyboard.SPACE = true;
             this.nextPlayer();
-        }, 1000);   
+        }, 2000);
     }
 
     chooseDirection() {
@@ -606,6 +792,7 @@ class World {
         this.character.forEach(char => {
             char.setWorld(this);
         });
+        this.gamestart = true;
     }
 
 
@@ -714,6 +901,7 @@ class World {
                 break;
         }
         this.character[this.player].player = this.player + 1;
+        if (this.character.length === 1) { this.activeFace = new FaceIcon(this.character[0], 20, 20, 0, 150);}
         this.player++;
     }
 

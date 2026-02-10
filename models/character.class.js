@@ -12,7 +12,7 @@ class Character extends MoveObjects {
 
     isLocked = false;
 
-    
+
 
     IMG_WALK_EAST = [];
     IMG_WALK_NORTH = [];
@@ -24,8 +24,8 @@ class Character extends MoveObjects {
     IMG_WALK_WEST = [];
     IMG_IDLE = [];
     IMG_JUMP = [];
-  
-    
+
+
 
     constructor() {
         super();
@@ -111,7 +111,7 @@ class Character extends MoveObjects {
 
         }
 
-        
+
 
         else {
             this.playAnimation(this.IMG_IDLE);
@@ -122,25 +122,44 @@ class Character extends MoveObjects {
 
 
     playJumpAnimationOnce() {
-    return new Promise(resolve => {
+        return new Promise(resolve => {
 
-        this.isLocked = true;
-        let frame = 0;
+            this.isLocked = true;
+            let frame = 0;
 
-        const interval = setInterval(() => {
+            const interval = setInterval(() => {
 
-            this.loadImage(this.IMG_JUMP[frame]);
-            frame++;
+                this.loadImage(this.IMG_JUMP[frame]);
+                frame++;
 
-            if (frame >= this.IMG_JUMP.length) {
-                clearInterval(interval);
-                this.isLocked = false;
-                resolve();
-            }
+                if (frame >= this.IMG_JUMP.length) {
+                    clearInterval(interval);
+                    this.isLocked = false;
+                    resolve();
+                }
 
-        }, 100); // gleiche Geschwindigkeit wie animate()
-    });
-}
+            }, 100); // gleiche Geschwindigkeit wie animate()
+        });
+    }
+
+
+    playJumpAnimationOnceWin() {
+        return new Promise(resolve => {
+            this.isLocked = true;
+            let frame = 0;
+
+            const interval = setInterval(() => {
+                this.loadImage(this.IMG_JUMP[frame]);
+                frame++;
+
+                if (frame >= this.IMG_JUMP.length) {
+                    clearInterval(interval);
+                    this.isLocked = false;
+                    resolve();
+                }
+            }, 100);
+        });
+    }
 
 
 }
