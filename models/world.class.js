@@ -55,15 +55,16 @@ class World {
         new Plate('b', 295, 515, 44), // yellow plate
         new Plate('b', 400, 540, 45)
     ];
-    yellowPlateIndices = [8, 16, 21, 25, 33, 36, 44];
+    yellowPlateIndices = [8, 16, 21, 25, 33, 38, 44];
     startFields = [[335, 195], [388, 130], [475, 105], [580, 110], [680, 215], [500, 220]];
     camView = new CameraView(0, 0);
     keyboard;
     ctx;
     games = [];
     canvasHere;
-    startScore = 20;
+    startScore = 10;
     popup;
+    popupOpen4Game = false;
     gamestart = false;
 
     games_jgj = [];
@@ -95,9 +96,16 @@ class World {
     camlock = true;
     activeFace = null;
 
+    gameRound = 1;
+    lastRound = null;
+
     AUDIO_DICEROLL = new Audio('audio/diceroll.wav');
     AUDIO_DICESTOP = new Audio('audio/dicestop.wav');
     AUDIO_HITFIELD = new Audio('audio/hitfield.mp3');
+    AUDIO_ORDEN = new Audio('audio/ordenfield.mp3');
+    AUDIO_WINNER = new Audio('audio/winner.mp3');
+    AUDIO_DREIRUNDEN = new Audio('audio/dreirunden.mp3');
+    AUDIO_LETZTERUNDE = new Audio('audio/letzterunde.mp3');
 
 
     constructor(canvas, keyboard) {
@@ -130,7 +138,7 @@ class World {
             if (this.popup.text && this.popup.title) { this.popup.draw(this.ctx); }
         }  // PopUp mit Schildinfos wird gezeichnet
         this.faces.forEach(face => face.draw(this.ctx));
-        if (this.activeFace && this.gamestart) { this.activeFace.draw(this.ctx);}
+        if (this.activeFace && this.gamestart) { this.activeFace.draw(this.ctx); }
         let self = this;
         requestAnimationFrame(() => {
             self.draw();
@@ -222,7 +230,15 @@ class World {
                     const result = await this.gamesPopup();
                     await this.applyGameResult(result);
                     this.popup = null;
-                    this.activePlayer = 1;
+                    if (this.lastRound) {
+                        if (this.gameRound < this.lastRound) {
+                            this.activePlayer = 1;
+                            this.gameRound++;
+                        } else { this.whoIsTheWinner(); return; }
+                    } else {
+                        this.activePlayer = 1;
+                        this.gameRound++;
+                    }
                 }
                 // console.log('Active Player: ' + this.activePlayer + ": " + this.character[this.activePlayer - 1].name);
                 this.activeFace = new FaceIcon(this.character[this.activePlayer - 1], 20, 20, this.character[this.activePlayer - 1].player - 1, 150);
@@ -258,7 +274,7 @@ class World {
             }
             this.lastValue = this.diceValue;
             this.dice.setValue(this.diceValue);
-            console.log('Dice Value: ' + this.diceValue);
+            // console.log('Dice Value: ' + this.diceValue);
             this.diceCount++;
             time *= 1.2;
 
@@ -273,73 +289,6 @@ class World {
         }, time);
     }
 
-
-    // gamesPopup() {
-    //     const type = this.checkGamesType();
-    //     let gameType;
-    //     switch (type) {
-    //         case 'jgj': gameType = this.games_jgj; break;
-    //         case '2vs2': gameType = this.games_2vs2; break;
-    //         case 'unfair': gameType = this.games_unfair; break;
-    //     }
-    //     let amount = gameType.length;
-    //     const randomIndex = Math.floor(Math.random() * amount);
-    //     if (type == 'jgj') {
-    //         this.popup = new PopUp(this, 30, -70, 800, 550, 'spiel-JGJ', gameType[randomIndex].title, 430, 150, gameType[randomIndex].rules, 430, 180);
-    //     } else {
-    //         this.popup = new PopUp(this, 30, -70, 800, 550, 'spiel-BGR', gameType[randomIndex].title, 430, 150, gameType[randomIndex].rules, 430, 180);
-    //     }
-    //     return new Promise(resolve => {
-
-    //         if (type == '2vs2' || type == 'unfair') {
-    //             const onKeyDown = (e) => {
-    //                 if (e.code === 'ArrowLeft') {
-    //                     window.removeEventListener('keydown', onKeyDown);
-    //                     resolve('blue'); // Blaues Team
-    //                 }
-
-    //                 if (e.code === 'ArrowRight') {
-    //                     window.removeEventListener('keydown', onKeyDown);
-    //                     resolve('red'); // Rotes Team
-    //                 }
-    //             };
-
-    //             window.addEventListener('keydown', onKeyDown);
-    //         } else {
-    //             const onKeyDown = (e) => {
-    //                 if (e.code === 'Digit1') {
-    //                     window.removeEventListener('keydown', onKeyDown);
-    //                     resolve(this.character[0].name); // Spieler 1
-    //                 }
-
-    //                 if (e.code === 'Digit2') {
-    //                     window.removeEventListener('keydown', onKeyDown);
-    //                     resolve(this.character[1].name); // Spieler 2
-    //                 }
-
-    //                 if (e.code === 'Digit3') {
-    //                     window.removeEventListener('keydown', onKeyDown);
-    //                     resolve(this.character[2].name); // Spieler 3
-    //                 }
-
-    //                 if (e.code === 'Digit4') {
-    //                     window.removeEventListener('keydown', onKeyDown);
-    //                     resolve(this.character[3].name); // Spieler 4
-    //                 }
-
-    //                 if (e.code === 'Digit5') {
-    //                     window.removeEventListener('keydown', onKeyDown);
-    //                     resolve(this.character[4].name); // Spieler 5
-    //                 }
-
-    //                 if (e.code === 'Digit6') {
-    //                     window.removeEventListener('keydown', onKeyDown);
-    //                     resolve(this.character[5].name); // Spieler 6
-    //                 }
-    //             };
-    //         }
-    //     });
-    // }
 
     async gamesPopup() {
         this.activeFace = null;
@@ -364,6 +313,7 @@ class World {
         }
 
         const game = pool[Math.floor(Math.random() * pool.length)];
+        this.popupOpen4Game = true;
 
         this.popup = new PopUp(
             this,
@@ -391,6 +341,7 @@ class World {
         }
         this.faces = [];
         this.popup = null;
+        this.popupOpen4Game = false;
 
         return { type, winner };
 
@@ -528,7 +479,7 @@ class World {
             if (char.team === 'blue') { blue++; }
             if (char.team === 'red') { red++; }
         });
-        if (red === 0) { return 'jgj'; }
+        if (red === 0 || blue === 0) { return 'jgj'; }
         else if (red === blue) { return '2vs2'; }
         else { return 'unfair'; }
     }
@@ -680,7 +631,7 @@ class World {
                 switch (plate.act) {
                     case 'b': char.AUDIO_JUHU.play(); char.team = 'blue'; board.addPoints(3); this.showPointsPopup('p'); break;
                     case 'r': char.AUDIO_NO.play(); char.team = 'red'; board.addPoints(-3); this.showPointsPopup('m'); break;
-                    case 'y': this.handleYellowPlate(char, plate); char.team = 'blue'; break;
+                    case 'y': char.team = 'blue'; break;
                 }
             }
         })
@@ -701,12 +652,13 @@ class World {
 
         // 🔒 Kein Geld → kein Orden
         if (board.score < 20) {
-            console.log('Nicht genug Punkte für einen Orden');
+            // console.log('Nicht genug Punkte für einen Orden');
             return;
         }
 
         // ❓ Spieler fragen
         this.popup = new PopUp(this, 250, 25, 600, 450, 'orden', '', '', '', '', '', '');
+        this.AUDIO_ORDEN.play();
 
         const wantsToBuy = await this.askYesNo();
 
@@ -717,9 +669,9 @@ class World {
             await char.playJumpAnimationOnce();
             this.replaceYellowPlate(plate.no);
             this.popup = null;
-            console.log('Orden gekauft');
+            // console.log('Orden gekauft');
         } else {
-            console.log('Orden abgelehnt');
+            // console.log('Orden abgelehnt');
         }
     }
 
@@ -727,7 +679,7 @@ class World {
     askYesNo() {
         return new Promise(resolve => {
 
-            console.log('Orden kaufen? ← = Nein | → = Ja');
+            // console.log('Orden kaufen? ← = Nein | → = Ja');
 
             const handler = (e) => {
                 if (e.code === 'ArrowLeft') {
@@ -901,9 +853,68 @@ class World {
                 break;
         }
         this.character[this.player].player = this.player + 1;
-        if (this.character.length === 1) { this.activeFace = new FaceIcon(this.character[0], 20, 20, 0, 150);}
+        if (this.character.length === 1) { this.activeFace = new FaceIcon(this.character[0], 20, 20, 0, 150); }
         this.player++;
+
     }
 
+    async whoIsTheWinner() {
+
+        this.camlock = true;
+        this.activeFace = null;
+
+        // 🔢 höchste Ordenzahl
+        const maxOrden = Math.max(...this.teamScore.map(ts => ts.orden));
+
+        let candidates = this.teamScore
+            .map((ts, i) => ({ ts, char: this.character[i], index: i }))
+            .filter(obj => obj.ts.orden === maxOrden);
+
+        // 🔢 bei Gleichstand → Score
+        if (candidates.length > 1) {
+            const maxScore = Math.max(...candidates.map(c => c.ts.score));
+            candidates = candidates.filter(c => c.ts.score === maxScore);
+        }
+
+        const winners = candidates.map(c => c.char);
+
+        // 🏆 WINNER POPUP
+        if (winners.length === 1) {
+            const winnerName = winners[0].name;
+
+            this.popup = new PopUp(
+                this,
+                350, -40, 330, 550,
+                'winner',
+                '',
+                '', '',
+                '',
+                '', '',
+                winnerName
+            );
+        } else {
+            this.popup = new PopUp(
+                this,
+                350, -40, 330, 550,
+                'winner',
+                'UNENTSCHIEDEN!',
+                600, 150,
+                'Mehrere Spieler haben gewonnen!',
+                600, 190
+            );
+        }
+
+        // 🎉 Animation & Sound nacheinander
+        this.AUDIO_WINNER.volume = 0.2;
+        this.AUDIO_WINNER.play();
+        for (const winner of winners) {
+            winner.AUDIO_WIN.currentTime = 0;
+            winner.AUDIO_WIN.play();
+
+            await winner.playJumpAnimationOnceWin();
+            await this.sleep(2000);
+        }
+        
+    }
 
 }

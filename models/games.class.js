@@ -43,8 +43,8 @@ collection = [
         mode_unfair: true,
         mode_2vs2: true,
         rules_All: "Ein Spieler pro Team tritt an. Jedes Team bekommt 10 Bierdeckel. Auf Stadtsignal hat jedes Team max. 1 Minute Zeit möglichst viele Dächer aus jeweils zwei Bierdeckeln zu bauen (nicht stapeln). Wer zuerst 5 Dächer gebaut hat oder am Schluss die meisten Dächer aufgestellt hat, gewinnt.",
-        rules_unfair: "Ein Spieler pro Team tritt an. Jedes Team bekommt 10 Bierdeckel. Auf Stadtsignal hat jedes Team max. 1 Minute Zeit möglichst viele Dächer aus jeweils zwei Bierdeckeln zu bauen (nicht stapeln). Wer zuerst 5 Dächer gebaut hat oder am Schluss die meisten Dächer aufgestellt hat, dessen Team-Farbe gewinnt.",
-        rules_2vs2: "Ein Spieler pro Team tritt an. Jedes Team bekommt 10 Bierdeckel. Auf Stadtsignal hat jedes Team max. 1 Minute Zeit möglichst viele Dächer aus jeweils zwei Bierdeckeln zu bauen (nicht stapeln). Wer zuerst 5 Dächer gebaut hat oder am Schluss die meisten Dächer aufgestellt hat, dessen Team-Farbe gewinnt."
+        rules_unfair: "Ein Spieler pro Team tritt an. Jedes Team bekommt 10 Bierdeckel. Auf Startsignal hat jedes Team max. 1 Minute Zeit möglichst viele Dächer aus jeweils zwei Bierdeckeln zu bauen (nicht stapeln). Wer zuerst 5 Dächer gebaut hat oder am Schluss die meisten Dächer aufgestellt hat, dessen Team-Farbe gewinnt.",
+        rules_2vs2: "Ein Spieler pro Team tritt an. Jedes Team bekommt 10 Bierdeckel. Auf Startsignal hat jedes Team max. 1 Minute Zeit möglichst viele Dächer aus jeweils zwei Bierdeckeln zu bauen (nicht stapeln). Wer zuerst 5 Dächer gebaut hat oder am Schluss die meisten Dächer aufgestellt hat, dessen Team-Farbe gewinnt."
     },
     {
         name: "Schuh-Boccia",

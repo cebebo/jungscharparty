@@ -12,7 +12,7 @@ class Character extends MoveObjects {
 
     isLocked = false;
 
-
+    buttonUpDownLock = false;
 
     IMG_WALK_EAST = [];
     IMG_WALK_NORTH = [];
@@ -69,97 +69,116 @@ class Character extends MoveObjects {
 
     reactionsCharacter() {
 
-        if (this.isLocked) return;
+        if (this.world.popupOpen4Game) {
+            if (this.world.keyboard.UP) {
+                if (!this.buttonUpDownLock) {
+                    this.buttonUpDownLock = true;
+                    this.world.lastRound = this.world.gameRound + 3;
+                    this.world.AUDIO_DREIRUNDEN.play();
+                }
+            } else { this.buttonUpDownLock = false; }
 
-        if (this.player === this.world.activePlayer) {
+            if (this.world.keyboard.DOWN) {
+                if (!this.buttonUpDownLock) {
+                    this.buttonUpDownLock = true;
+                    this.world.lastRound = this.world.gameRound + 1;
+                    this.world.AUDIO_LETZTERUNDE.play();
+                }
+            } else { this.buttonUpDownLock = false; }
+        }
 
-            if (this.world.keyboard.UP && !this.world.keyboard.LEFT && !this.world.keyboard.RIGHT) {
-                this.playAnimation(this.IMG_WALK_NORTH);
+
+            if (this.isLocked) return;
+
+            if (this.player === this.world.activePlayer) {
+
+                if (this.world.keyboard.UP && !this.world.keyboard.LEFT && !this.world.keyboard.RIGHT) {
+                    this.playAnimation(this.IMG_WALK_NORTH);
+                }
+
+                else if (this.world.keyboard.DOWN && !this.world.keyboard.LEFT && !this.world.keyboard.RIGHT) {
+                    this.playAnimation(this.IMG_WALK_SOUTH);
+                }
+
+                else if (this.world.keyboard.RIGHT && !this.world.keyboard.UP && !this.world.keyboard.DOWN) {
+                    this.playAnimation(this.IMG_WALK_EAST);
+                }
+
+                else if (this.world.keyboard.LEFT && !this.world.keyboard.UP && !this.world.keyboard.DOWN) {
+                    this.playAnimation(this.IMG_WALK_WEST);
+                }
+
+                else if (this.world.keyboard.LEFT && this.world.keyboard.UP) {
+                    this.playAnimation(this.IMG_WALK_NORTH_WEST);
+                }
+
+                else if (this.world.keyboard.LEFT && this.world.keyboard.DOWN) {
+                    this.playAnimation(this.IMG_WALK_SOUTH_WEST);
+                }
+
+                else if (this.world.keyboard.RIGHT && this.world.keyboard.UP) {
+                    this.playAnimation(this.IMG_WALK_NORTH_EAST);
+                }
+
+                else if (this.world.keyboard.RIGHT && this.world.keyboard.DOWN) {
+                    this.playAnimation(this.IMG_WALK_SOUTH_EAST);
+                }
+
+                else {
+                    this.playAnimation(this.IMG_IDLE);
+                }
+
             }
 
-            else if (this.world.keyboard.DOWN && !this.world.keyboard.LEFT && !this.world.keyboard.RIGHT) {
-                this.playAnimation(this.IMG_WALK_SOUTH);
-            }
 
-            else if (this.world.keyboard.RIGHT && !this.world.keyboard.UP && !this.world.keyboard.DOWN) {
-                this.playAnimation(this.IMG_WALK_EAST);
-            }
-
-            else if (this.world.keyboard.LEFT && !this.world.keyboard.UP && !this.world.keyboard.DOWN) {
-                this.playAnimation(this.IMG_WALK_WEST);
-            }
-
-            else if (this.world.keyboard.LEFT && this.world.keyboard.UP) {
-                this.playAnimation(this.IMG_WALK_NORTH_WEST);
-            }
-
-            else if (this.world.keyboard.LEFT && this.world.keyboard.DOWN) {
-                this.playAnimation(this.IMG_WALK_SOUTH_WEST);
-            }
-
-            else if (this.world.keyboard.RIGHT && this.world.keyboard.UP) {
-                this.playAnimation(this.IMG_WALK_NORTH_EAST);
-            }
-
-            else if (this.world.keyboard.RIGHT && this.world.keyboard.DOWN) {
-                this.playAnimation(this.IMG_WALK_SOUTH_EAST);
-            }
 
             else {
                 this.playAnimation(this.IMG_IDLE);
             }
 
+
         }
 
 
+        playJumpAnimationOnce() {
+            return new Promise(resolve => {
 
-        else {
-            this.playAnimation(this.IMG_IDLE);
+                this.isLocked = true;
+                let frame = 0;
+
+                const interval = setInterval(() => {
+
+                    this.loadImage(this.IMG_JUMP[frame]);
+                    frame++;
+
+                    if (frame >= this.IMG_JUMP.length) {
+                        clearInterval(interval);
+                        this.isLocked = false;
+                        resolve();
+                    }
+
+                }, 100); // gleiche Geschwindigkeit wie animate()
+            });
+        }
+
+
+        playJumpAnimationOnceWin() {
+            return new Promise(resolve => {
+                this.isLocked = true;
+                let frame = 0;
+
+                const interval = setInterval(() => {
+                    this.loadImage(this.IMG_JUMP[frame]);
+                    frame++;
+
+                    if (frame >= this.IMG_JUMP.length) {
+                        clearInterval(interval);
+                        this.isLocked = false;
+                        resolve();
+                    }
+                }, 100);
+            });
         }
 
 
     }
-
-
-    playJumpAnimationOnce() {
-        return new Promise(resolve => {
-
-            this.isLocked = true;
-            let frame = 0;
-
-            const interval = setInterval(() => {
-
-                this.loadImage(this.IMG_JUMP[frame]);
-                frame++;
-
-                if (frame >= this.IMG_JUMP.length) {
-                    clearInterval(interval);
-                    this.isLocked = false;
-                    resolve();
-                }
-
-            }, 100); // gleiche Geschwindigkeit wie animate()
-        });
-    }
-
-
-    playJumpAnimationOnceWin() {
-        return new Promise(resolve => {
-            this.isLocked = true;
-            let frame = 0;
-
-            const interval = setInterval(() => {
-                this.loadImage(this.IMG_JUMP[frame]);
-                frame++;
-
-                if (frame >= this.IMG_JUMP.length) {
-                    clearInterval(interval);
-                    this.isLocked = false;
-                    resolve();
-                }
-            }, 100);
-        });
-    }
-
-
-}

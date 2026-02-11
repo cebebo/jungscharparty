@@ -44,7 +44,7 @@ class PopUp extends MoveObjects {
         'img/popup/minus3.png'
     ]
 
-    constructor(world, x, y, width, height, type, title, titleX, titleY, text, textX, textY) {
+    constructor(world, x, y, width, height, type, title, titleX, titleY, text, textX, textY, winnerName = null) {
         super();
         this.world = world;
         this.loadImage(this.IMG_wegweiser);
@@ -53,6 +53,7 @@ class PopUp extends MoveObjects {
         this.loadImages(this.IMG_winner);
         this.loadImages(this.IMG_faces);
         this.loadImages(this.IMG_points);
+        this.winnerName = winnerName;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -90,14 +91,14 @@ class PopUp extends MoveObjects {
             case 'm3':
                 this.img.src = this.IMG_points[1];
                 break;
-            // case 'winner':
-            //     this.img.src = this.IMG_winner[0];
-            //     break;
-            // case 'face':
-            //     this.img.src = this.IMG_faces[0];
-            //     break;
+            case 'winner':
+                if (this.winnerName) {
+                    this.img.src = `img/characters/${this.winnerName}/winner.png`;
+                }
+                break;
         }
     }
+
 
 
     wrapText(ctx, text, x, y, maxWidth, lineHeight) {

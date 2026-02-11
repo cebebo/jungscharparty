@@ -21,7 +21,7 @@ class Teamscore {
     }
 
     addOrden(value) {
-        this.orden += value;
+        this.orden++;
     }
 
     draw(ctx) {
