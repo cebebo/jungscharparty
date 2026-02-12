@@ -30,12 +30,13 @@
     <script src="js/game.js"></script>
 </head>
 
-<body onload="init()">
+<body onload="init(), music()">
     <img class="logo"src="./img/jungscharparty.png">
     <div id="screen">
         <canvas id="canvas" class="d-none" width="1024" height="480"></canvas>
     </div>
     <div id="startscreen" class="startscreen">
+        <h1 onclick="music()" id="music">&#128264;</h1>
         <div class="menu" id="menu">
             <div class="button c1" onclick="loadInfoBox(1)">Spielerklärung</div>
             <div class="button c2" onclick="loadInfoBox(2)">Steuerung</div>

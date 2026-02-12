@@ -4,6 +4,8 @@ let keyboard = new Keyboard();
 // let character = new Character();
 // let ctx;
 
+let AUDIO_MUSIC = new Audio('audio/music.mp3');
+
 let AUDIO_ME_ALEX = new Audio('audio/me-alex.mp3');
 let AUDIO_ME_CHRIS = new Audio('audio/me-chris.mp3');
 let AUDIO_ME_KIM = new Audio('audio/me-kim.mp3');
@@ -15,6 +17,7 @@ let playerCount = 0;
 function init() {
     canvas = document.getElementById('canvas');
     world = new World(canvas, keyboard);
+    AUDIO_MUSIC.loop = true;
 }
 
 function addCharacter(kid) {
@@ -52,6 +55,17 @@ function setWorldStart() {
     document.getElementById('infoBox').innerHTML = `<b onclick="fullscreen()">Zurück zum Fullscreen</b>`;
 }
 
+
+function music() {
+    AUDIO_MUSIC.volume = 0.2;
+    if (AUDIO_MUSIC.paused) {
+        AUDIO_MUSIC.play();
+        document.getElementById('music').innerHTML = '&#128264;';
+    } else {
+        AUDIO_MUSIC.pause();
+        document.getElementById('music').innerHTML = '&#128263;';
+    }
+}
 
 function countPlayer() {
     playerCount++;

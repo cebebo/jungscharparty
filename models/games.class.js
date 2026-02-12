@@ -58,11 +58,38 @@ collection = [
     {
         name: "Knandschuh-Ball",
         mode_All: true,
-        mode_unfair: false,
+        mode_unfair: true,
         mode_2vs2: true,
-        rules_All: "Ein Spieler pro Team tritt an und trägt die Schuhe als Handschuhe an den Händen. Jedes Team hat jeweils 1 Stuhl als Tor in einer Ecke. Bei <Start> müssen die Spieler den Ball krabbelnd/knieend mit den Schuhen ins generische Tor schlagen. Dabei ist der Stuhl als Tor von allen Seiten bespielbar. Das Team, das ein Tor kassiert, scheidet aus. Wer übrig bleibt gewinnt. Gibt es nach 5 Minuten kein Sieger, gewinnt keiner.",
-        rules_unfair: "",
-        rules_2vs2: "Ein Spieler pro Team tritt an und trägt die Schuhe als Handschuhe an den Händen. Jedes Farb-Team hat jeweils 1 Stuhl als Tor in einer Ecke. Bei <Start> müssen die Spieler den Ball krabbelnd/knieend mit den Schuhen ins generische Tor schlagen. Dabei ist der Stuhl als Tor von allen Seiten bespielbar. Das Farb-Team, das ein zuerst ein Tor erzielt, gewinnt. Gibt es nach 2 Minuten kein Sieger, gewinnt keiner."
+        rules_All: "Ein Spieler pro Team tritt an und trägt die Schuhe als Handschuhe an den Händen. Jedes Team hat jeweils 1 Stuhl als Tor in einer Ecke. Beim Startsignal müssen die Spieler den Ball krabbelnd/knieend mit den Schuhen ins generische Tor schlagen. Dabei ist der Stuhl als Tor von allen Seiten bespielbar. Das Team, das ein Tor kassiert, scheidet aus. Wer übrig bleibt gewinnt.",
+        rules_unfair: "Ein Spieler pro Team tritt für sein Farbteam an und trägt die Schuhe als Handschuhe an den Händen. Jedes Farb-Team hat jeweils 2 Stühle als Torpfosten an einer Spielseite. Beim Startsignal müssen die Spieler den Ball krabbelnd/knieend mit den Schuhen ins generische Tor schlagen. Gespielt wird ohne Torwart. Das Farb-Team, das ein zuerst ein Tor erzielt, gewinnt.",
+        rules_2vs2: "Ein Spieler pro Team tritt für sein Farbteam an und trägt die Schuhe als Handschuhe an den Händen. Jedes Farb-Team hat jeweils 2 Stühle als Torpfosten an einer Spielseite. Beim Startsignal müssen die Spieler den Ball krabbelnd/knieend mit den Schuhen ins generische Tor schlagen. Gespielt wird ohne Torwart. Das Farb-Team, das ein zuerst ein Tor erzielt, gewinnt."       
+    },
+    {
+        name: "Hausnummern würfeln",
+        mode_All: true,
+        mode_unfair: true,
+        mode_2vs2: true,
+        rules_All: "Drei Spieler pro Team treten an. Abwechselnd würfelt jeweils der erste Spieler jedes Teams mit dem Würfel. Anschließend gibt er an, ob die gewürfelte Ziffer in der dreistelligen Hausnummer vorne, in der Mitte oder hinten platziert werden soll. Dann geht es mit den zweiten und dritten Spielern in jedem Team weiter. Das Team, das am Ende die höchste Hausnummer hat, gewinnt. Bei Unentschieden entscheidet die höhere Zahl bei einem einzigen Würfelwurf.",
+        rules_unfair: "Drei Spieler pro Team treten an. Abwechselnd würfelt jeweils der erste Spieler jedes Teams mit dem Würfel. Anschließend gibt er an, ob die gewürfelte Ziffer in der dreistelligen Hausnummer vorne, in der Mitte oder hinten platziert werden soll. Dann geht es mit den zweiten und dritten Spielern in jedem Team weiter. Das Team, das am Ende die höchste Hausnummer hat, gewinnt für seine Farbe. Bei Unentschieden entscheidet die höhere Zahl bei einem einzigen Würfelwurf.",
+        rules_2vs2: "Drei Spieler pro Team treten an. Abwechselnd würfelt jeweils der erste Spieler jedes Teams mit dem Würfel. Anschließend gibt er an, ob die gewürfelte Ziffer in der dreistelligen Hausnummer vorne, in der Mitte oder hinten platziert werden soll. Dann geht es mit den zweiten und dritten Spielern in jedem Team weiter. Das Team, das am Ende die höchste Hausnummer hat, gewinnt für seine Farbe. Bei Unentschieden entscheidet die höhere Zahl bei einem einzigen Würfelwurf."
+    },
+    {
+        name: "Hahnenkampf",
+        mode_All: true,
+        mode_unfair: true,
+        mode_2vs2: true,
+        rules_All: "Ein Spieler pro Team tritt an. Auf Startsignal müssen die Spieler auf einem Bein hüpfend und die Arme hinter dem Rücken verschränkt versuchen, die anderen Spieler 'umzuhüpfen'. Wer beide Beine auf dem Boden hat oder das Sprungbein wechselt, scheidet aus. Wer am Ende übrig bleibt, gewinnt.",
+        rules_unfair: "Zwei Spieler pro Team treten an. Auf Startsignal müssen die Spieler auf einem Bein hüpfend und die Arme hinter dem Rücken verschränkt versuchen, die anderen Spieler 'umzuhüpfen' (nicht den Teampartner). Wer beide Beine auf dem Boden hat oder das Sprungbein wechselt, scheidet aus. Die Farbe, die am Ende noch als einzige steht, gewinnt.",
+        rules_2vs2: "Zwei Spieler pro Team treten an. Auf Startsignal müssen die Spieler auf einem Bein hüpfend und die Arme hinter dem Rücken verschränkt versuchen, die anderen Spieler 'umzuhüpfen' (nicht den Teampartner). Wer beide Beine auf dem Boden hat oder das Sprungbein wechselt, scheidet aus. Die Farbe, die am Ende noch als einzige steht, gewinnt."
+    },
+    {
+        name: "Der Boden ist Lava",
+        mode_All: true,
+        mode_unfair: true,
+        mode_2vs2: true,
+        rules_All: "Alle Teams treten komplett gegeneinander an. In einer Reihe hintereinander stellen sich die Teams an der Startlinie nebeneinander auf. Auf Startsignal müssen sie auf die andere Seite über die Ziellinie gelangen. Dabei dürfen sie jedoch den Boden nicht berühren, sondern dürfen nur auf Bierdeckeln stehen, die sie sich eingenständig auf den Boden legen müssen. Bei Bodenkontakt: Neustart! Das Team, das zuerst komplett die Ziellinie überquert, gewinnt.",
+        rules_unfair: "Alle Teams treten komplett gegeneinander an. In einer Reihe hintereinander stellen sich die Teams an der Startlinie nebeneinander auf. Auf Startsignal müssen sie auf die andere Seite über die Ziellinie gelangen. Dabei dürfen sie jedoch den Boden nicht berühren, sondern dürfen nur auf Bierdeckeln stehen, die sie sich eingenständig auf den Boden legen müssen. Bei Bodenkontakt: Neustart! Das Farb-Team, das zuerst komplett die Ziellinie überquert, gewinnt für seine Farbe.",
+        rules_2vs2: "Alle Teams treten komplett gegeneinander an. In einer Reihe hintereinander stellen sich die Teams an der Startlinie nebeneinander auf. Auf Startsignal müssen sie auf die andere Seite über die Ziellinie gelangen. Dabei dürfen sie jedoch den Boden nicht berühren, sondern dürfen nur auf Bierdeckeln stehen, die sie sich eingenständig auf den Boden legen müssen. Bei Bodenkontakt: Neustart! Das Farb-Team, das zuerst komplett die Ziellinie überquert, gewinnt für seine Farbe."
     }
 ];
 
