@@ -106,7 +106,11 @@ class World {
     AUDIO_WINNER = new Audio('audio/winner.mp3');
     AUDIO_DREIRUNDEN = new Audio('audio/dreirunden.mp3');
     AUDIO_LETZTERUNDE = new Audio('audio/letzterunde.mp3');
-
+    AUDIO_SPIEL_JGJ = new Audio('audio/minispiel-jgj.mp3');
+    AUDIO_SPIEL_BGR = new Audio('audio/minispiel-bgr.mp3');
+    AUDIO_EINE_MINUTE = new Audio('audio/eine-minute.mp3');
+    AUDIO_KEIN_SIEGER = new Audio('audio/nobody-wins.mp3');
+    AUDIO_TIME_OVER = new Audio('audio/zeit-vorbei.mp3');
 
     constructor(canvas, keyboard) {
         this.keyboard = keyboard;
@@ -301,14 +305,17 @@ class World {
             case 'jgj':
                 pool = this.games_jgj;
                 popupType = 'spiel-JGJ';
+                this.AUDIO_SPIEL_JGJ.play();
                 break;
             case '2vs2':
                 pool = this.games_2vs2;
                 popupType = 'spiel-BGR';
+                this.AUDIO_SPIEL_BGR.play();
                 break;
             case 'unfair':
                 pool = this.games_unfair;
                 popupType = 'spiel-BGR';
+                this.AUDIO_SPIEL_BGR.play();
                 break;
         }
 
