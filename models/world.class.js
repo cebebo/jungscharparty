@@ -826,9 +826,29 @@ class World {
                 this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/alex.png', this.player + 1));
                 this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
                 break;
+            case 'billy':
+                this.character.push(new Billy(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
+                this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/billy.png', this.player + 1));
+                this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
+                break;
+            case 'charlie':
+                this.character.push(new Charlie(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
+                this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/charlie.png', this.player + 1));
+                this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
+                break;
             case 'chris':
                 this.character.push(new Chris(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
                 this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/chris.png', this.player + 1));
+                this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
+                break;
+            case 'jacky':
+                this.character.push(new Jacky(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
+                this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/jacky.png', this.player + 1));
+                this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
+                break;
+            case 'kai':
+                this.character.push(new Kai(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
+                this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/kai.png', this.player + 1));
                 this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
                 break;
             case 'kim':
@@ -846,9 +866,19 @@ class World {
                 this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/paddy.png', this.player + 1));
                 this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
                 break;
+            case 'rene':
+                this.character.push(new Rene(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
+                this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/rene.png', this.player + 1));
+                this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
+                break;
             case 'sascha':
                 this.character.push(new Sascha(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
                 this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/sascha.png', this.player + 1));
+                this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
+                break;
+            case 'toni':
+                this.character.push(new Toni(this.startFields[this.character.length][0], this.startFields[this.character.length][1]));
+                this.scoreboard.push(new Scoreboard(870, place, 'img/scoreboard/toni.png', this.player + 1));
                 this.teamScore.push(new Teamscore(870, place + 20, this.player + 1, this.startScore));
                 break;
         }

@@ -12,6 +12,12 @@ let AUDIO_ME_KIM = new Audio('audio/me-kim.mp3');
 let AUDIO_ME_LUKA = new Audio('audio/me-luka.mp3');
 let AUDIO_ME_PADDY = new Audio('audio/me-paddy.mp3');
 let AUDIO_ME_SASCHA = new Audio('audio/me-sascha.mp3');
+let AUDIO_ME_BILLY = new Audio('audio/me-billy.mp3');
+let AUDIO_ME_CHARLIE = new Audio('audio/me-charlie.mp3');
+let AUDIO_ME_JACKY = new Audio('audio/me-jacky.mp3');
+let AUDIO_ME_KAI = new Audio('audio/me-kai.mp3');
+let AUDIO_ME_RENE = new Audio('audio/me-rene.mp3');
+let AUDIO_ME_TONI = new Audio('audio/me-toni.mp3');
 let playerCount = 0;
 
 function init() {
@@ -26,8 +32,20 @@ function addCharacter(kid) {
         case 'alex':
             AUDIO_ME_ALEX.play();
             break;
+        case 'billy':
+            AUDIO_ME_BILLY.play();
+            break;
+        case 'charlie':
+            AUDIO_ME_CHARLIE.play();
+            break;
         case 'chris':
             AUDIO_ME_CHRIS.play(); 
+            break;
+        case 'jacky':
+            AUDIO_ME_JACKY.play();
+            break;
+        case 'kai':
+            AUDIO_ME_KAI.play();
             break;
         case 'kim':
             AUDIO_ME_KIM.play(); 
@@ -38,9 +56,15 @@ function addCharacter(kid) {
         case 'paddy':
             AUDIO_ME_PADDY.play(); 
             break;
+        case 'rene':
+            AUDIO_ME_RENE.play();
+            break;
         case 'sascha':
             AUDIO_ME_SASCHA.play(); 
-            break;  
+            break;
+        case 'toni':
+            AUDIO_ME_TONI.play();
+            break;
     }
 }
 
