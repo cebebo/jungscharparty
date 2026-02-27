@@ -66,6 +66,7 @@ class World {
     popup;
     popupOpen4Game = false;
     gamestart = false;
+    lastGame = 0;
 
     games_jgj = [];
     games_2vs2 = [];
@@ -82,6 +83,7 @@ class World {
     enterLock = false;
     diceValue = 0;
     diceCount = 0;
+    isDiceRolling = false;
 
     lastValue;
 
@@ -118,8 +120,10 @@ class World {
         this.canvasHere = canvas;
         this.draw();
         this.setWorld();
-        this.runLoops()
+        this.runLoops();
+        this.addDiceClickListener();
     }
+
 
     draw() {
         this.updateCamera();
@@ -142,6 +146,8 @@ class World {
             if (this.popup.text && this.popup.title) { this.popup.draw(this.ctx); }
         }  // PopUp mit Schildinfos wird gezeichnet
         this.faces.forEach(face => face.draw(this.ctx));
+        this.ctx.strokeStyle = "red";
+        this.ctx.strokeRect(this.dice.x, this.dice.y, this.dice.width, this.dice.height);
         if (this.activeFace && this.gamestart) { this.activeFace.draw(this.ctx); }
         let self = this;
         requestAnimationFrame(() => {
@@ -252,20 +258,89 @@ class World {
         this.keyboard.SPACE = false; // Verhindert, dass die Leertaste in der nächsten Runde noch aktiv ist
     }
 
+
     // Der Würfel wird geworfen
+    // startDice() {
+    //     if (this.keyboard.ENTER) {
+    //         if (!this.enterLock) {
+    //             this.camlock = true;
+    //             this.enterLock = true;
+    //             this.diceCount = 0;
+    //             this.AUDIO_DICEROLL.play();
+    //             // Würfelwurf starten
+
+    //             this.DiceTimeout(30);
+    //         }
+    //     } else { this.enterLock = false; }
+    // }
+
     startDice() {
         if (this.keyboard.ENTER) {
-            if (!this.enterLock) {
-                this.camlock = true;
-                this.enterLock = true;
-                this.diceCount = 0;
-                this.AUDIO_DICEROLL.play();
-                // Würfelwurf starten
-
-                this.DiceTimeout(30);
-            }
-        } else { this.enterLock = false; }
+            this.rollDice();
+            this.keyboard.ENTER = false;
+        }
     }
+
+
+    addDiceClickListener() {
+        const getMousePos = (event) => {
+            const rect = this.canvasHere.getBoundingClientRect();
+
+            const scaleX = this.canvasHere.width / rect.width;
+            const scaleY = this.canvasHere.height / rect.height;
+
+            return {
+                x: (event.clientX - rect.left) * scaleX,
+                y: (event.clientY - rect.top) * scaleY
+            };
+        };
+
+        const handleInteraction = (x, y) => {
+
+            const diceX = this.dice.x;
+            const diceY = this.dice.y;
+            const diceW = this.dice.width;
+            const diceH = this.dice.height;
+
+            if (
+                x >= diceX &&
+                x <= diceX + diceW &&
+                y >= diceY &&
+                y <= diceY + diceH
+            ) {
+                this.rollDice();
+            }
+        };
+
+        // 🖱 Maus
+        this.canvasHere.addEventListener('click', (event) => {
+            const pos = getMousePos(event);
+            handleInteraction(pos.x, pos.y);
+        });
+
+        // 📱 Touch
+        this.canvasHere.addEventListener('touchstart', (event) => {
+            const touch = event.touches[0];
+            const rect = this.canvasHere.getBoundingClientRect();
+
+            const x = touch.clientX - rect.left;
+            const y = touch.clientY - rect.top;
+
+            handleInteraction(x, y);
+        });
+    }
+
+
+    rollDice() {
+        if (this.isDiceRolling) return;
+        this.isDiceRolling = true;
+        this.camlock = true;
+        this.diceCount = 0;
+        this.AUDIO_DICEROLL.currentTime = 0;
+        this.AUDIO_DICEROLL.play();
+        this.DiceTimeout(30);
+    }
+
 
     DiceTimeout(time) {
         setTimeout(() => {
@@ -288,6 +363,7 @@ class World {
                 this.AUDIO_DICESTOP.play();
                 setTimeout(() => {
                     this.movePlayer();
+                    this.isDiceRolling = false;
                 }, 1000);
             }
         }, time);
@@ -319,7 +395,13 @@ class World {
                 break;
         }
 
-        const game = pool[Math.floor(Math.random() * pool.length)];
+        let gameNo = Math.floor(Math.random() * pool.length);
+        if (gameNo == this.lastGame) {
+            if (gameNo < pool.length) { gameNo++ }
+            else { gameNo-- }
+        }
+        this.lastGame = gameNo
+        const game = pool[gameNo];
         this.popupOpen4Game = true;
 
         this.popup = new PopUp(
@@ -422,7 +504,6 @@ class World {
     }
 
 
-
     createJGJFaces() {
         this.faces = [];
 
@@ -475,8 +556,6 @@ class World {
             this.faces.push(new FaceIcon(char, redX + i * spacing, y, char.player - 1));
         });
     }
-
-
 
 
     checkGamesType() {
@@ -539,6 +618,7 @@ class World {
             this.nextPlayer();
         }, 2000);
     }
+
 
     chooseDirection() {
         return new Promise(resolve => {
@@ -705,7 +785,6 @@ class World {
     }
 
 
-
     replaceYellowPlate(oldPlateNo) {
         // altes Feld zurück auf blau
         this.plates[oldPlateNo - 1].setAct('b');
@@ -721,18 +800,20 @@ class World {
     }
 
 
-
     autoMoveRight(char) {
         char.MoveRight();
     }
+
 
     autoMoveLeft(char) {
         char.MoveLeft();
     }
 
+
     autoMoveUp(char) {
         char.MoveUp();
     }
+
 
     autoMoveDown(char) {
         char.MoveDown();
@@ -895,6 +976,7 @@ class World {
 
     }
 
+
     async whoIsTheWinner() {
 
         this.camlock = true;
@@ -951,7 +1033,7 @@ class World {
             await winner.playJumpAnimationOnceWin();
             await this.sleep(2000);
         }
-        
+
     }
 
 }
